@@ -6,9 +6,19 @@
 
 ## Installation
 
-To install from PyPI:
+This fork requires Python 3.11 or newer.
+
+To install this fork from the `glasflow` branch:
+
+```shell
+python -m pip install "nflows @ git+https://github.com/uofgravity/nflows.git@glasflow"
 ```
-pip install nflows
+
+The `nflows` package on PyPI is the upstream release. To use the fork bundled
+with glasflow, install `glasflow` and import it as `glasflow.nflows`:
+
+```shell
+python -m pip install glasflow
 ```
 
 ## Usage

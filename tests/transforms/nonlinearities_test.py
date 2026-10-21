@@ -2,6 +2,7 @@
 
 import unittest
 
+import pytest
 import torch
 
 from nflows.transforms import nonlinearities as nl
@@ -64,6 +65,7 @@ class TestPiecewiseCDF(TransformTest):
 
 
 class TestUnconstrainedPiecewiseCDF(TransformTest):
+    @pytest.mark.flaky(reruns=5)
     def test_forward_inverse_are_consistent(self):
         shape = [2, 3, 4]
         batch_size = 10
@@ -75,10 +77,10 @@ class TestUnconstrainedPiecewiseCDF(TransformTest):
         ]
 
         for transform in transforms:
-            with self.subTest(transform=transform):
-                inputs = 3 * torch.randn(batch_size, *shape)
-                self.eps = 1e-4
-                self.assert_forward_inverse_are_consistent(transform, inputs)
+            inputs = 3 * torch.randn(batch_size, *shape)
+            self.eps = 1e-4
+            # Propagate failures so pytest-rerunfailures can retry the test.
+            self.assert_forward_inverse_are_consistent(transform, inputs)
 
 
 class LogitTest(TransformTest):

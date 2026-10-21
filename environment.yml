@@ -23,7 +23,7 @@ dependencies:
     - -e .  # install package in development mode
     - umnn
   - pytest
-  - python
+  - python>=3.11
   - pytorch
   - pyyaml
   - tensorboard

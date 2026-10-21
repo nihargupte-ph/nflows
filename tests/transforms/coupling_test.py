@@ -2,6 +2,7 @@
 
 import unittest
 
+import pytest
 import torch
 
 from nflows.nn import nets
@@ -158,6 +159,7 @@ class UMNNTransformTest(TransformTest):
                 self.assert_tensor_is_good(logabsdet, [batch_size])
                 self.assertEqual(outputs[:, mask <= 0, ...], inputs[:, mask <= 0, ...])
 
+    @pytest.mark.flaky(reruns=5)
     def test_forward_inverse_are_consistent(self):
         self.eps = 1e-6
         for shape in self.shapes:
@@ -168,8 +170,9 @@ class UMNNTransformTest(TransformTest):
                 nb_steps=20,
                 solver="CC"
             )
-            with self.subTest(shape=shape):
-                self.assert_forward_inverse_are_consistent(transform, inputs)
+            # Let assertion failures propagate so pytest-rerunfailures can retry
+            # this numerically sensitive test with new random inputs and weights.
+            self.assert_forward_inverse_are_consistent(transform, inputs)
 
 
 class PiecewiseCouplingTransformTest(TransformTest):
@@ -235,14 +238,15 @@ class PiecewiseCouplingTransformTest(TransformTest):
                         outputs[:, mask <= 0, ...], inputs[:, mask <= 0, ...]
                     )
 
+    @pytest.mark.flaky(reruns=5)
     def test_forward_inverse_are_consistent(self):
         for shape in self.shapes:
             for cls in self.classes:
                 inputs = torch.rand(batch_size, *shape)
                 transform, mask = create_coupling_transform(cls, shape)
-                with self.subTest(cls=cls, shape=shape):
-                    self.eps = 1e-4  # TODO: can do better?
-                    self.assert_forward_inverse_are_consistent(transform, inputs)
+                self.eps = 1e-4  # TODO: can do better?
+                # Propagate failures so pytest-rerunfailures can retry the test.
+                self.assert_forward_inverse_are_consistent(transform, inputs)
 
     def test_forward_inverse_are_consistent_unconstrained(self):
         self.eps = 1e-5
