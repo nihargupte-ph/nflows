@@ -18,6 +18,7 @@ setup(
     author="Conor Durkan, Artur Bekasov, George Papamakarios, Iain Murray",
     packages=find_packages(exclude=["tests"]),
     license="MIT",
+    python_requires=">=3.11",
     install_requires=[
         "numpy",
         "torch",
