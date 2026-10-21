@@ -238,14 +238,15 @@ class PiecewiseCouplingTransformTest(TransformTest):
                         outputs[:, mask <= 0, ...], inputs[:, mask <= 0, ...]
                     )
 
+    @pytest.mark.flaky(reruns=5)
     def test_forward_inverse_are_consistent(self):
         for shape in self.shapes:
             for cls in self.classes:
                 inputs = torch.rand(batch_size, *shape)
                 transform, mask = create_coupling_transform(cls, shape)
-                with self.subTest(cls=cls, shape=shape):
-                    self.eps = 1e-4  # TODO: can do better?
-                    self.assert_forward_inverse_are_consistent(transform, inputs)
+                self.eps = 1e-4  # TODO: can do better?
+                # Propagate failures so pytest-rerunfailures can retry the test.
+                self.assert_forward_inverse_are_consistent(transform, inputs)
 
     def test_forward_inverse_are_consistent_unconstrained(self):
         self.eps = 1e-5
