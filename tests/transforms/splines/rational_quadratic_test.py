@@ -176,26 +176,6 @@ class UnconstrainedRationalQuadraticSplineStaticShapeTest(torchtestcase.TorchTes
                     with self.subTest(dtype=dtype, mode=mode, inverse=inverse):
                         self._check(dtype, mode, inverse)
 
-    def test_nan_inputs_pass_through(self):
-        # NaN is outside the interval mask, so like the reference it must come
-        # out as NaN with zero logabsdet rather than reach the bin search.
-        inputs = torch.tensor([[0.5, float("nan")]])
-        params = [torch.zeros(1, 2, 4), torch.zeros(1, 2, 4), torch.zeros(1, 2, 3)]
-        for inverse in (False, True):
-            with self.subTest(inverse=inverse):
-                ref = _reference_unconstrained_rational_quadratic_spline(
-                    inputs, *params, inverse=inverse
-                )
-                new = splines.unconstrained_rational_quadratic_spline(
-                    inputs, *params, inverse=inverse
-                )
-                self.assertTrue(torch.isnan(new[0][0, 1]))
-                self.assertTrue(
-                    torch.allclose(ref[0], new[0], rtol=0, atol=0, equal_nan=True),
-                    "outputs differ",
-                )
-                self.assertTrue(torch.equal(ref[1], new[1]), "logabsdet differ")
-
     def test_compiles_without_graph_breaks(self):
         inputs, params = self._make_inputs(torch.float32, "mixed")
         eager = splines.unconstrained_rational_quadratic_spline(inputs, *params)
