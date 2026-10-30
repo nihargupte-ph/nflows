@@ -29,8 +29,8 @@ def unconstrained_rational_quadratic_spline(
     ``torch.where``. Compared to masked indexing (``outputs[mask] = ...``) this
     involves no data-dependent shapes and no host synchronisation, so the
     function can be captured by ``torch.compile`` without graph breaks and its
-    many small kernels can be fused. The result is numerically identical to the
-    masked formulation.
+    many small kernels can be fused. The result matches the masked formulation
+    up to floating-point round-off.
     """
     if tails != "linear":
         raise RuntimeError("{} tails are not implemented.".format(tails))
